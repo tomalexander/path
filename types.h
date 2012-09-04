@@ -1,6 +1,7 @@
 #pragma once
 #include <cinttypes>
 
+typedef uint64_t size_t;
 typedef int8_t s8;
 typedef int16_t s16;
 typedef int32_t s32;
