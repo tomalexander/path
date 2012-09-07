@@ -10,6 +10,19 @@ using std::unordered_set;
 
 namespace path
 {
+    std::function<void (node* moving)> move_to_closed_list_hook;
+    std::function<void (node* moving)> move_to_open_list_hook;
+    
+    void set_move_to_closed_list_hook(std::function<void (node* moving)> hook)
+    {
+        move_to_closed_list_hook = hook;
+    }
+
+    void set_move_to_open_list_hook(std::function<void (node* moving)> hook)
+    {
+        move_to_open_list_hook = hook;
+    }
+
     vector<edge*> generate_path(node* origin, node* destination)
     {
         vector<edge*> ret;
@@ -17,6 +30,7 @@ namespace path
         unordered_set<node*> closed_list;
         origin->set_g(0);
         open_list.push(origin);
+        if (move_to_open_list_hook) move_to_open_list_hook(origin);
 
         while (true)
         {
@@ -25,6 +39,7 @@ namespace path
             closed_list.insert(current_node);
             if (current_node == destination)
                 break;
+            if (move_to_closed_list_hook) move_to_closed_list_hook(current_node);
             for (edge* e : current_node->edges)
             {
                 node* destination = e->get_destination();
