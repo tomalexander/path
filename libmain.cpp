@@ -26,7 +26,7 @@ namespace path
     vector<edge*> generate_path(node* origin, node* destination)
     {
         vector<edge*> ret;
-        bheap<node*> open_list([](node* a, node* b) {return a->get_f() < b->get_f();});
+        bheap<node*> open_list([destination](node* a, node* b) {return a->get_f(destination) < b->get_f(destination);});
         unordered_set<node*> closed_list;
         origin->set_g(0);
         open_list.push(origin);

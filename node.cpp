@@ -16,11 +16,11 @@ namespace path
 
     }
 
-    const fu32& node::get_f()
+    const fu32& node::get_f(node* goal)
     {
         if (need_to_calculate_f)
         {
-            f = g + get_h();
+            f = g + get_h(goal);
             need_to_calculate_f = false;
         }
         return f;
@@ -37,7 +37,7 @@ namespace path
         return g;
     }
 
-    const fu32& node::get_h()
+    const fu32& node::get_h(node* goal)
     {
         if (need_to_calculate_h)
         {
@@ -45,6 +45,7 @@ namespace path
             need_to_calculate_f = true;
             ///@todo actually calculate h
             h = 0;
+            if (calculate_h_function) h = calculate_h_function(goal);
         }
         return h;
     }
