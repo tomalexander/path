@@ -62,6 +62,7 @@ namespace path
                     destination->set_g(current_node->get_g() + e->get_cost());
                     destination->parent = e;
                     open_list.push(destination);
+                    if (move_to_open_list_hook) move_to_open_list_hook(destination);
                 }
             }
 
