@@ -54,7 +54,7 @@ namespace path
                             continue;
                         if (mod_y + y == height)
                             continue;
-                        current_node->edges.push_back(new edge(current_node, get(x+mod_x, y+mod_y), (mod_x == 0 || mod_y == 0 ? default_orthagonal_cost : default_diagonal_cost)));
+                        current_node->get_edges().push_back(new edge(current_node, get(x+mod_x, y+mod_y), (mod_x == 0 || mod_y == 0 ? default_orthagonal_cost : default_diagonal_cost)));
                     }
                 }
             }

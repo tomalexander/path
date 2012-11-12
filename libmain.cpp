@@ -26,6 +26,7 @@
 #include "bheap.h"
 #include <vector>
 #include <unordered_set>
+#include <iostream>
 
 using std::vector;
 using std::unordered_set;
@@ -62,7 +63,7 @@ namespace path
             if (current_node == destination)
                 break;
             if (move_to_closed_list_hook) move_to_closed_list_hook(current_node);
-            for (edge* e : current_node->edges)
+            for (edge* e : current_node->get_edges())
             {
                 node* destination = e->get_destination();
                 if (closed_list.find(destination) != closed_list.end())
@@ -97,5 +98,63 @@ namespace path
         for (auto it = reverse_ret.rbegin(); it != reverse_ret.rend(); ++it)
             ret.push_back(*it);
         return ret;
-    }    
+    }
+    
+    vector<edge*> generate_path(node* origin, std::function<bool (node*)> is_destination)
+    {
+        vector<edge*> ret;
+        bheap<node*> open_list([](node* a, node* b) {return a->get_f(nullptr) < b->get_f(nullptr);});
+        unordered_set<node*> closed_list;
+        origin->set_g(0);
+        open_list.push(origin);
+        if (move_to_open_list_hook) move_to_open_list_hook(origin);
+
+        node* destination = nullptr;
+        while (true)
+        {
+            node* current_node = open_list.top();
+            open_list.pop();
+            closed_list.insert(current_node);
+            if (is_destination(current_node))
+            {
+                destination = current_node;
+                break;
+            }
+            if (move_to_closed_list_hook) move_to_closed_list_hook(current_node);
+            for (edge* e : current_node->get_edges())
+            {
+                node* destination = e->get_destination();
+                if (closed_list.find(destination) != closed_list.end())
+                { //Already on closed list
+                    continue;
+                }
+                else if (open_list.find(destination) != nullptr)
+                { // On open list already
+                    fu32 new_g = current_node->get_g() + e->get_cost();
+                    if (new_g < destination->get_g())
+                    {
+                        destination->set_g(new_g);
+                        destination->parent = e;
+                        open_list.sort();
+                    }
+                }
+                else
+                { // Never been visited before
+                    destination->set_g(current_node->get_g() + e->get_cost());
+                    destination->parent = e;
+                    open_list.push(destination);
+                    if (move_to_open_list_hook) move_to_open_list_hook(destination);
+                }
+            }
+
+            if (open_list.empty()) //Failed to find destination
+                return ret;
+        }
+        vector<edge*> reverse_ret;
+        for (node* cur = destination; cur != origin; cur = cur->parent->get_origin())
+            reverse_ret.push_back(cur->parent);
+        for (auto it = reverse_ret.rbegin(); it != reverse_ret.rend(); ++it)
+            ret.push_back(*it);
+        return ret;
+    }
 }

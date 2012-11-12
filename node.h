@@ -36,7 +36,7 @@ namespace path
         node();
         ~node();
 
-        list<edge*> edges;
+        virtual list<edge*> & get_edges() {return edges;}
         edge* parent;
         const fu32& get_f(node* goal);
         void set_g(fu32 _g);
@@ -46,10 +46,11 @@ namespace path
         
         void set_calculate_h_function(std::function<fu32 (node* goal)> hook) {calculate_h_function = hook;}
         
-      private:
+      protected:
         fu32 g;                 /**< Movement cost to this node */
         fu32 h;                 /**< Heuristic cost to destination */
         fu32 f;                 /**< g+h */
+        list<edge*> edges;
         bool need_to_calculate_f;
         std::function<fu32 (node* goal)> calculate_h_function;
     };

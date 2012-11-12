@@ -35,7 +35,7 @@ namespace path
         node* get_destination() { return destination;}
         const fu32& get_cost() { return cost;}
 
-      private:
+      protected:
         node* origin;
         node* destination;
         fu32 cost;
